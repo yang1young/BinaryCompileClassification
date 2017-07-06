@@ -9,6 +9,7 @@ data_dir = "/home/qiaoyang/codeData/binary_code/data/result/"
 train_dir = "/home/qiaoyang/codeData/binary_code/data/train_file/"
 test_dir = "/home/qiaoyang/codeData/binary_code/data/test_file/"
 output_dir = "/home/qiaoyang/codeData/binary_code/data/"
+small_sample_dir = "/home/qiaoyang/codeData/binary_code/data/small_sample/"
 dirs = [output_dir + '0/', output_dir + '1/', output_dir + '2/', output_dir + '3/']
 
 
@@ -33,6 +34,7 @@ def data_format(data_dir):
 
 def sep_file_to_whole(code_file_name):
     code_train_handler = open(output_dir+code_file_name+'.train','w')
+    code_dev_handler = open(output_dir+code_file_name+'.dev','w')
     code_test_handler = open(output_dir+code_file_name+'.test', 'w')
     for dir in dirs:
         files = os.listdir(dir)
@@ -44,15 +46,52 @@ def sep_file_to_whole(code_file_name):
             flag = random.random()
             if (flag < 0.2):
                 handler = code_test_handler
+            elif(flag>0.2 and flag<0.3):
+                handler = code_dev_handler
             else:
                 handler = code_train_handler
-
             codes = open(dir+file,'r').readlines()
             for code in codes:
-                code = cu.clean(code)
+                code = cu.clean(code,False)
                 handler.write(tag+'@'+code+'\n')
     code_train_handler.close()
     code_test_handler.close()
+    code_dev_handler.close()
+
+def get_small_sample(code_file_name,only_command):
+    code_train_handler_sample = open(small_sample_dir + code_file_name + '.train', 'w')
+    code_dev_handler_sample = open(small_sample_dir + code_file_name + '.dev', 'w')
+    code_test_handler_sample = open(small_sample_dir + code_file_name + '.test', 'w')
+    for dir in dirs:
+        files = os.listdir(dir)
+        if(len(files)==0):
+            continue
+        tag = dir.split('/')[-2]
+        print tag
+        for file in files:
+            keep = random.random()
+            if(keep<0.1):
+                flag = random.random()
+                if (flag < 0.2):
+                    handler = code_test_handler_sample
+                elif(flag>0.2 and flag<0.3):
+                    handler = code_dev_handler_sample
+                else:
+                    handler = code_train_handler_sample
+                codes = open(dir+file,'r').readlines()
+                for code in codes:
+                    code = cu.clean(code,False)
+                    if(only_command):
+                        temps = code.split('$')
+                        new_temps =[]
+                        for temp in temps:
+                            temp = temp.strip()
+                            new_temps.append(temp.split(' ')[0])
+                        code = ' '.join(new_temps)
+                    handler.write(tag+'@'+code+'\n')
+    code_train_handler_sample.close()
+    code_test_handler_sample.close()
+    code_dev_handler_sample.close()
 
 
 # process labels
@@ -85,8 +124,9 @@ def prepare_classification_data(data_path):
 
 
 if __name__ == "__main__":
-    data_format(data_dir)
-    sep_file_to_whole('data')
+    #data_format(data_dir)
+    #sep_file_to_whole('data')
+    get_small_sample('data_only_command',True)
     # train_data_name = output_dir+'data.train'
     # test_data_name = output_dir+'data.test'
     # train_x,train_y = prepare_classification_data(train_data_name)

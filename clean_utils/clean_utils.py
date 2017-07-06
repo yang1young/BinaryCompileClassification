@@ -12,12 +12,27 @@ SPLIT_CHARS = [',','+','&','!','%','?','_','|',':','-','=','\\','~','*','^','<',
 def remove_non_ascii_1(text):
     return ''.join(i for i in text if ord(i) < 128)
 
-def clean(text):
+def hasNumbers(inputString):
+    return any(char.isdigit() for char in inputString)
+
+def replace_number(text):
+    codes = text.split(' ')
+    codes_new = []
+    for code in codes:
+        if(hasNumbers(code)):
+            codes_new.append('VAR')
+        else:
+            codes_new.append(code)
+    return ' '.join(codes_new)
+
+def clean(text,need_replace_number):
     try:
         if (text == '' or text == None):
             return ''
         text = remove_non_ascii_1(text)
         text = get_normalize_code(text,-1)
+        if(need_replace_number):
+            text = replace_number(text)
         text = re.sub('@', '', text)
         text = re.sub(' +', ' ', text)
         text = re.sub('\n+', '\n', text)

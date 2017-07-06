@@ -11,7 +11,7 @@ import sklearn.tree as tree
 def tf_idf_model(x_train,x_test):
 
     #将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频
-    count_vect = CountVectorizer(ngram_range=(1, 1), min_df=100, max_features=10000)
+    count_vect = CountVectorizer(ngram_range=(1, 2), min_df=100, max_features=10000)
     X_train_counts = count_vect.fit_transform(x_train)
 
     print count_vect.get_feature_names()
@@ -24,8 +24,8 @@ def tf_idf_model(x_train,x_test):
 
 
 def train():
-    train_data_name = data_helper.output_dir + 'data.train'
-    test_data_name = data_helper.output_dir + 'data.test'
+    train_data_name = data_helper.small_sample_dir + 'data_only_command.train'
+    test_data_name = data_helper.small_sample_dir + 'data_only_command.test'
     train_x, train_y = data_helper.prepare_classification_data(train_data_name)
     test_x, test_y = data_helper.prepare_classification_data(test_data_name)
     print len(train_y)
