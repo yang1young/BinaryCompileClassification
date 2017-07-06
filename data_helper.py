@@ -5,12 +5,14 @@ import pandas as pd
 import clean_utils.clean_utils as cu
 from keras.utils.np_utils import to_categorical
 
-data_dir = "/home/qiaoyang/codeData/binary_code/data/result/"
-train_dir = "/home/qiaoyang/codeData/binary_code/data/train_file/"
-test_dir = "/home/qiaoyang/codeData/binary_code/data/test_file/"
-output_dir = "/home/qiaoyang/codeData/binary_code/data/"
+data_dir = "/home/qiaoyang/codeData/binary_code/data/raw/"
+train_dir = "/home/qiaoyang/codeData/binary_code/data/train/"
+test_dir = "/home/qiaoyang/codeData/binary_code/data/test/"
+
+full_dir = "/home/qiaoyang/codeData/binary_code/data/"
 small_sample_dir = "/home/qiaoyang/codeData/binary_code/data/small_sample/"
-dirs = [output_dir + '0/', output_dir + '1/', output_dir + '2/', output_dir + '3/']
+
+dirs = ['0/', '1/', '2/', '3/']
 
 
 def data_format(data_dir):
@@ -27,42 +29,22 @@ def data_format(data_dir):
         elif (tag == 'O3'):
             dir = dirs[3]
         if(dir!=''):
-            temp_file = open(dir + file, 'w')
+            flag = random.random()
+            if(flag<0.2):
+                temp_path = test_dir
+            else:
+                temp_path = train_dir
+            temp_file = open(temp_path+ dir + file, 'w')
             temp_file.write(open(data_dir+file,'r').read())
             temp_file.close()
 
 
-def sep_file_to_whole(code_file_name):
-    code_train_handler = open(output_dir+code_file_name+'.train','w')
-    code_dev_handler = open(output_dir+code_file_name+'.dev','w')
-    code_test_handler = open(output_dir+code_file_name+'.test', 'w')
+def get_sample(dir,code_file_name,need_replace_number,only_command,sample_percent):
+    code_train_handler_sample = open(dir + code_file_name + '.train', 'w')
+    code_dev_handler_sample = open(dir + code_file_name + '.dev', 'w')
+    code_test_handler_sample = open(dir + code_file_name + '.test', 'w')
     for dir in dirs:
-        files = os.listdir(dir)
-        if(len(files)==0):
-            continue
-        tag = dir.split('/')[-2]
-        print tag
-        for file in files:
-            flag = random.random()
-            if (flag < 0.2):
-                handler = code_test_handler
-            elif(flag>0.2 and flag<0.3):
-                handler = code_dev_handler
-            else:
-                handler = code_train_handler
-            codes = open(dir+file,'r').readlines()
-            for code in codes:
-                code = cu.clean(code,False)
-                handler.write(tag+'@'+code+'\n')
-    code_train_handler.close()
-    code_test_handler.close()
-    code_dev_handler.close()
-
-def get_small_sample(code_file_name,only_command):
-    code_train_handler_sample = open(small_sample_dir + code_file_name + '.train', 'w')
-    code_dev_handler_sample = open(small_sample_dir + code_file_name + '.dev', 'w')
-    code_test_handler_sample = open(small_sample_dir + code_file_name + '.test', 'w')
-    for dir in dirs:
+        dir = train_dir+dir
         files = os.listdir(dir)
         if(len(files)==0):
             continue
@@ -70,7 +52,7 @@ def get_small_sample(code_file_name,only_command):
         print tag
         for file in files:
             keep = random.random()
-            if(keep<0.1):
+            if(keep<sample_percent):
                 flag = random.random()
                 if (flag < 0.2):
                     handler = code_test_handler_sample
@@ -80,7 +62,7 @@ def get_small_sample(code_file_name,only_command):
                     handler = code_train_handler_sample
                 codes = open(dir+file,'r').readlines()
                 for code in codes:
-                    code = cu.clean(code,False)
+                    code = cu.clean(code,need_replace_number)
                     if(only_command):
                         temps = code.split('$')
                         new_temps =[]
@@ -125,8 +107,7 @@ def prepare_classification_data(data_path):
 
 if __name__ == "__main__":
     #data_format(data_dir)
-    #sep_file_to_whole('data')
-    get_small_sample('data_only_command',True)
+    get_sample(small_sample_dir,'data',False,False,0.1)
     # train_data_name = output_dir+'data.train'
     # test_data_name = output_dir+'data.test'
     # train_x,train_y = prepare_classification_data(train_data_name)
