@@ -6,8 +6,15 @@ import mistune
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-_WORD_SPLIT = re.compile(b"([,+\-&!%'_?|=\s/\*^<>$@\[\](){}#;])")
+_WORD_SPLIT = re.compile(b"([,+\-&!%'._?:|=\s/\*^<>$@\[\](){}#;])")
 SPLIT_CHARS = [',','+','&','!','%','?','_','|',':','-','=','\\','~','*','^','<','>','[',']','$','{','}',';','.','`','@','(',')']
+
+def remove_blank(texts):
+    new_texts = []
+    for text in texts:
+        if(text!='' and text!=' '):
+            new_texts.append(text)
+    return new_texts
 
 def remove_non_ascii_1(text):
     return ''.join(i for i in text if ord(i) < 128)
