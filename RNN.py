@@ -15,7 +15,7 @@ MAX_SENT_LENGTH = 100
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
 EMBEDDING_DIM = 200
-MAX_EPOCH = 1
+MAX_EPOCH = 10
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENT_LENGTH), dtype='int32')
@@ -46,7 +46,7 @@ def model_structure():
     model.add(Embedding(output_dim=EMBEDDING_DIM, input_dim=MAX_NB_WORDS, input_length=MAX_SENT_LENGTH,trainable = True,mask_zero=True))
     model.add(Dropout(0.5))
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
-    #model.add(LSTM(200,kernel_initializer =initial,dropout=0.8))
+    model.add(LSTM(200,kernel_initializer =initial,dropout=0.8,return_sequences=True))
     model.add(LSTM(100,kernel_initializer =initial,dropout=0.8))
     model.add(Dense(NUM_CLASS, activation='softmax'))
     return model
@@ -92,7 +92,7 @@ def reload_model(model_name):
     # load weights
     model.load_weights(data_helper.model_dir+model_name)
     # Compile model (required to make predictions)
-    optimizer = keras.optimizers.Adagrad(lr=0.3, epsilon=1e-08, decay=0.0)
+    optimizer = keras.optimizers.Adagrad(lr=0.1, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',
                   optimizer=optimizer,
                   metrics=['acc'])
