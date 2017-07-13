@@ -1,26 +1,14 @@
 import keras
-from sklearn.metrics import precision_score,recall_score
+from sklearn.metrics import precision_score,recall_score,accuracy_score
 import numpy as np
 import pandas as pd
-import cPickle
-from collections import defaultdict
-import re
-from bs4 import BeautifulSoup
 from keras.callbacks import ModelCheckpoint
 import clean_utils.clean_utils as cu
 import data_helper
-import sys
-from keras.preprocessing.text import Tokenizer, text_to_word_sequence
-from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
-from keras.layers import Embedding, Masking
 from keras.layers import Dense, Input, Flatten
 from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, Dropout, LSTM, GRU, Bidirectional, TimeDistributed
 from keras.models import Model
-from nltk import tokenize
-from keras import backend as K
-from keras.engine.topology import Layer, InputSpec
-from keras import initializers
 
 MAX_SENT_LENGTH = 100
 MAX_SENTS = 20
@@ -87,9 +75,10 @@ def eval_model(model,x,y):
     print 'crosstab:{0}'.format(pd.crosstab(y_real, y_predict, margins=True))
     print 'precision:{0}'.format(precision_score(y_real, y_predict, average='macro'))
     print 'recall:{0}'.format(recall_score(y_real, y_predict, average='macro'))
+    print 'accuracy:{0}'.format(accuracy_score(y_real, y_predict))
 
 
-def train(x_train, y_train,x_val, y_val):
+def train(x_train, y_train,x_val, y_val,model_path):
     model = model_structure()
     #optimizer =keras.optimizers.Adagrad(lr=0.3, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',
@@ -99,12 +88,13 @@ def train(x_train, y_train,x_val, y_val):
     print("model fitting - Hierachical LSTM")
     print model.summary()
     # checkpoint
-    filepath = data_helper.model_dir+"weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+    filepath = model_path+"weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
     history =model.fit(x_train, y_train, validation_data=(x_val, y_val),
               epochs=MAX_EPOCH, batch_size=80, callbacks=callbacks_list)
     print(history.history)
+    data_helper.save_obj(history.history, model_path, "train.log")
     return model
 
 def reload_model(model_name):
@@ -122,22 +112,28 @@ def reload_model(model_name):
 
 
 if __name__ == "__main__":
-    train_texts, train_blocks, train_labels = data_helper.prepare_dl_data(data_helper.small_sample_dir + 'data.train')
-    _, dev_blocks, dev_labels = data_helper.prepare_dl_data(data_helper.small_sample_dir + 'data.dev')
-    _, test_blocks, test_labels = data_helper.prepare_dl_data(data_helper.small_sample_dir + 'data.test')
 
-    # tokenizer = Tokenizer(nb_words=MAX_NB_WORDS)
-    # tokenizer.fit_on_texts(train_texts)
-    # tokenizer.word_index['UKNOWN'] = MAX_NB_WORDS
-    # word_index = tokenizer.word_index
-    word_index = data_helper.get_tokenizer(train_texts,MAX_NB_WORDS,'voca')
+    train_path = ""
+    dev_path = ""
+    test_path = ""
+    test_path_d = ""
+    model_path = ""
+    is_bytecode = True
+    train_texts, train_blocks,train_labels = data_helper.prepare_dl_data(train_path, is_bytecode)
+    _,dev_blocks, dev_labels = data_helper.prepare_dl_data(dev_path, is_bytecode)
+    _,test_blocks,test_labels = data_helper.prepare_dl_data(test_path, is_bytecode)
+    _, test_blocks_d,test_labels_d = data_helper.prepare_dl_data(test_path_d, is_bytecode)
+
+    word_index = data_helper.get_tokenizer(train_texts, MAX_NB_WORDS, 'voca')
 
     print('Total %s unique tokens.' % len(word_index))
 
     x_train, y_train = data_transfer(word_index, train_blocks, train_labels)
     x_val, y_val = data_transfer(word_index, dev_blocks, dev_labels)
     x_test, y_test = data_transfer(word_index, test_blocks, test_labels)
+    x_test_d, y_test_d = data_transfer(word_index, test_blocks_d, test_labels_d)
 
-    model = train(x_train,y_train,x_val,y_val)
-    #model = reload_model('weights-improvement-00-0.21.hdf5')
-    eval_model(model,x_test,y_test)
+    model = train(x_train, y_train, x_val, y_val, model_path)
+    # model = reload_model('weights-improvement-00-0.21.hdf5')
+    eval_model(model, x_test, y_test)
+    eval_model(model, x_test_d, y_test_d)
