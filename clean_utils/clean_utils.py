@@ -32,22 +32,6 @@ def replace_number(text):
             codes_new.append(code)
     return ' '.join(codes_new)
 
-def clean(text,need_replace_number):
-    try:
-        if (text == '' or text == None):
-            return ''
-        text = remove_non_ascii_1(text)
-        text = get_normalize_code(text,-1)
-        if(need_replace_number):
-            text = replace_number(text)
-        text = re.sub('@', '', text)
-        text = re.sub(' +', ' ', text)
-        text = re.sub('\n+', '\n', text)
-    except Exception, e:
-        print e
-        print 'ERROR OF clean'
-    return text.strip()
-
 
 def get_normalize_code(code,max_lenghth):
 
@@ -68,3 +52,24 @@ def get_normalize_code(code,max_lenghth):
     result = " ".join(result.split())
     return result
 
+def assemble_clean(text,need_replace_number):
+    try:
+        if (text == '' or text == None):
+            return ''
+        text = remove_non_ascii_1(text)
+        text = get_normalize_code(text,-1)
+        if(need_replace_number):
+            text = replace_number(text)
+        text = re.sub('@', '', text)
+        text = re.sub(' +', ' ', text)
+        text = re.sub('\n+', '\n', text)
+    except Exception, e:
+        print e
+        print 'ERROR OF clean'
+    return text.strip()
+
+def bytecode_clean(text):
+    text = re.sub('@', '', text)
+    text = re.sub(' +', ' ', text)
+    text = re.sub('\n+', '\n', text)
+    return text.strip()
