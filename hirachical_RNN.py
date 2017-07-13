@@ -28,7 +28,7 @@ def data_transfer(word_index,x,y):
                 for _, word in enumerate(wordTokens):
                     if k < MAX_SENT_LENGTH:
                         if(word not in word_index):
-                            data[i, j, k] = 1
+                            data[i, j, k] = word_index['<unknown>']
                         else:
                             data[i, j, k] = word_index[word]
                     k = k + 1

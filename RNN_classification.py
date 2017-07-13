@@ -49,10 +49,8 @@ def rnn_model():
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
     #model.add(LSTM(200,kernel_initializer =initial,dropout=0.8,return_sequences=True).supports_masking)
     layer1 = LSTM(100,kernel_initializer =initial)
-    layer1.supports_masking = True
     model.add(layer1)
     layer2 = Dense(NUM_CLASS, activation='softmax')
-    layer2.supports_masking = True
     model.add(layer2)
     return model
 
