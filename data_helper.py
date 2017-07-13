@@ -78,13 +78,13 @@ def get_tokenizer(all_text,max_word,voc_name):
     common_list = counts.most_common()
     common_list.sort(key=lambda x: x[1], reverse=True)
     sorted_voc = [wc[0] for wc in common_list]
-    word_picked = ['<pad>','<unknown>']
+    word_picked = ['<unknown>']
     word_picked.extend(sorted_voc)
     if(len(word_picked)>max_word):
         word_picked = word_picked[:max_word]
     word_index = dict()
     for word,index in zip(word_picked,range(max_word)):
-        word_index[word] = index
+        word_index[word] = index+1
     save_obj(word_index,model_dir,voc_name)
     print "unknown word index is "+str(word_index.get('<unknown>'))
     print "Nuber of unique token is "+str(len(word_index))
