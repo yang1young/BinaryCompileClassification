@@ -1,18 +1,16 @@
 import keras
-from keras.datasets import imdb
-from keras.preprocessing import sequence
-from keras.preprocessing.text import text_to_word_sequence
-from sklearn.metrics import precision_score,recall_score
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
-import clean_utils.clean_utils as cu
-import data_helper
+from keras.datasets import imdb
+from keras.layers import Dense
+from keras.layers import Embedding, LSTM
+from keras.models import Sequential
+from keras.preprocessing import sequence
 from keras.utils.np_utils import to_categorical
-from keras.layers import Embedding, Masking
-from keras.layers import Dense, Input, Flatten
-from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, Dropout, LSTM, GRU, Bidirectional, TimeDistributed
-from keras.models import Model, Sequential
+from sklearn.metrics import precision_score, recall_score
+
+from keras_cnn_rnn import data_helper
 
 max_features = 10000
 maxlen = 100  # cut texts after this number of words (among top max_features most common words)
@@ -86,7 +84,7 @@ def train(x_train, y_train):
     print("model fitting - Hierachical LSTM")
     print model.summary()
     # checkpoint
-    filepath = data_helper.model_dir+"weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+    filepath = data_helper.model_dir + "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
     model.fit(x_train, y_train, validation_data=(x_test, y_test),
@@ -96,7 +94,7 @@ def train(x_train, y_train):
 def reload_model(model_name):
     model = model_structure()
     # load weights
-    model.load_weights(data_helper.model_dir+model_name)
+    model.load_weights(data_helper.model_dir + model_name)
     # Compile model (required to make predictions)
     optimizer = keras.optimizers.Adagrad(lr=0.1, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',

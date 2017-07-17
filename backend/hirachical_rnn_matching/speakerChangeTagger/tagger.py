@@ -1,12 +1,14 @@
-import tensorflow as tf
-import numpy as np
-from tqdm import tqdm
-import os
 import argparse
-from speakerChangeTagger.textData import TextData
-from speakerChangeTagger.RecurrentModel import RecurrentModel
-from sklearn.metrics import confusion_matrix
+import os
 import pickle as p
+
+import tensorflow as tf
+from sklearn.metrics import confusion_matrix
+from tqdm import tqdm
+
+from backend.hirachical_rnn_matching.speakerChangeTagger import RecurrentModel
+from backend.hirachical_rnn_matching.speakerChangeTagger import TextData
+
 
 class Tagger:
     def __init__(self):

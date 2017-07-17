@@ -1,15 +1,15 @@
 import keras
-from sklearn.metrics import precision_score,recall_score,accuracy_score
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
+from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, LSTM
+from keras.layers import Dense, Input, Flatten
+from keras.models import Model, Sequential
+from keras.utils.np_utils import to_categorical
+from sklearn.metrics import precision_score, recall_score, accuracy_score
+
 import clean_utils.clean_utils as cu
 import data_helper
-from keras.utils.np_utils import to_categorical
-from keras.layers import Embedding, Masking
-from keras.layers import Dense, Input, Flatten
-from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, Dropout, LSTM, GRU, Bidirectional, TimeDistributed
-from keras.models import Model, Sequential
 
 MAX_SENT_LENGTH = 100
 NUM_CLASS = 4
@@ -113,13 +113,13 @@ def train(x_train, y_train,x_val, y_val,model_path):
     history = model.fit(x_train, y_train, validation_data=(x_val, y_val),
               epochs=MAX_EPOCH, batch_size=80, callbacks=callbacks_list)
     print(history.history)
-    data_helper.save_obj(history.history,model_path,"train.log")
+    data_helper.save_obj(history.history, model_path, "train.log")
     return model
 
 def reload_model(model_name):
     model = rnn_model()
     # load weights
-    model.load_weights(data_helper.model_dir+model_name)
+    model.load_weights(data_helper.model_dir + model_name)
     # Compile model (required to make predictions)
     #optimizer = keras.optimizers.Adagrad(lr=0.1, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',
@@ -137,16 +137,16 @@ if __name__ == "__main__":
     test_path_d = ""
     model_path = ""
     is_bytecode = True
-    train_texts, train_labels = data_helper.prepare_classification_data(train_path,is_bytecode)
-    dev_texts, dev_labels = data_helper.prepare_classification_data(dev_path,is_bytecode)
-    test_texts, test_labels = data_helper.prepare_classification_data(test_path,is_bytecode)
-    test_texts_d, test_labels_d = data_helper.prepare_classification_data(test_path_d,is_bytecode)
+    train_texts, train_labels = data_helper.prepare_classification_data(train_path, is_bytecode)
+    dev_texts, dev_labels = data_helper.prepare_classification_data(dev_path, is_bytecode)
+    test_texts, test_labels = data_helper.prepare_classification_data(test_path, is_bytecode)
+    test_texts_d, test_labels_d = data_helper.prepare_classification_data(test_path_d, is_bytecode)
 
     # tokenizer = Tokenizer(nb_words=MAX_NB_WORDS)
     # tokenizer.fit_on_texts(train_texts)
     # tokenizer.word_index['UKNOWN'] = MAX_NB_WORDS
     # word_index = tokenizer.word_index
-    word_index = data_helper.get_tokenizer(train_texts,MAX_NB_WORDS,'voca')
+    word_index = data_helper.get_tokenizer(train_texts, MAX_NB_WORDS, 'voca')
 
     print('Total %s unique tokens.' % len(word_index))
 

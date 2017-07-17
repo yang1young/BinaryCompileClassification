@@ -1,14 +1,15 @@
 import keras
-from sklearn.metrics import precision_score,recall_score,accuracy_score
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
+from keras.layers import Dense, Input
+from keras.layers import Embedding, LSTM, TimeDistributed
+from keras.models import Model
+from keras.utils.np_utils import to_categorical
+from sklearn.metrics import precision_score, recall_score, accuracy_score
+
 import clean_utils.clean_utils as cu
 import data_helper
-from keras.utils.np_utils import to_categorical
-from keras.layers import Dense, Input, Flatten
-from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, Dropout, LSTM, GRU, Bidirectional, TimeDistributed
-from keras.models import Model
 
 MAX_SENT_LENGTH = 100
 MAX_SENTS = 20
@@ -100,7 +101,7 @@ def train(x_train, y_train,x_val, y_val,model_path):
 def reload_model(model_name):
     model = model_structure()
     # load weights
-    model.load_weights(data_helper.model_dir+model_name)
+    model.load_weights(data_helper.model_dir + model_name)
     # Compile model (required to make predictions)
     #optimizer = keras.optimizers.Adagrad(lr=0.3, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',

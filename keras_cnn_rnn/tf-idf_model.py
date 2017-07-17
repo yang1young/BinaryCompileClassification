@@ -1,16 +1,17 @@
 #!/usr/bin/python
 # coding=utf-8
 import os
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import CountVectorizer
-import data_helper
 import random
-import pandas as pd
-from  sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_score, recall_score, accuracy_score
-import sklearn.tree as tree
-import clean_utils.clean_utils as cu
+
 import numpy as np
+import pandas as pd
+import sklearn.tree as tree
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.metrics import precision_score, recall_score, accuracy_score
+
+import clean_utils.clean_utils as cu
+import data_helper
 
 
 def tf_idf_model(x_train):
