@@ -13,8 +13,12 @@ from tensorflow.contrib import learn
 import clean_utils.clean_utils as cu
 logging.getLogger().setLevel(logging.INFO)
 
-def clean_str(s):
-	return cu.clean(s,False)
+def clean_str(s,is_bytecode,need_replace_number):
+	if(is_bytecode):
+		str = cu.bytecode_clean(s)
+	else:
+		str = cu.assemble_clean(s,need_replace_number)
+	return str
 
 def load_embeddings(vocabulary):
 	word_embeddings = {}
@@ -70,10 +74,10 @@ def get_index(vocabulary,word):
 		index = vocabulary['UKN']
 	return index
 
-def load_data(filename,max_length,max_word):
+def load_data(filename,max_length,max_word,need_pad,is_bytecode,need_replace_number):
 
 	df = pd.read_csv(filename, sep='@', header=None, encoding='utf8', engine='python')
-	selected = ['Code', 'Tag']
+	selected = ['tag', 'assemble', 'byte']
 	df.columns = selected
 
 	labels = sorted(list(set(df[selected[0]].tolist())))
@@ -82,10 +86,14 @@ def load_data(filename,max_length,max_word):
 	np.fill_diagonal(one_hot, 1)
 	label_dict = dict(zip(labels, one_hot))
 
-	x_raw = df[selected[1]].apply(lambda x: clean_str(x).split(' ')).tolist()
-	y_raw = df[selected[0]].apply(lambda y: label_dict[y]).tolist()
+	code_index = 1
+	if (is_bytecode):
+		code_index = 2
 
-	x_raw = pad_sentences(x_raw,max_length)
+	x_raw = df[selected[code_index]].apply(lambda x: clean_str(x,is_bytecode,need_replace_number).split(' ')).tolist()
+	y_raw = df[selected[0]].apply(lambda y: label_dict[y]).tolist()
+	if(need_pad):
+		x_raw = pad_sentences(x_raw,max_length)
 	vocabulary, vocabulary_inv = build_vocab(x_raw,max_word)
 
 	x = np.array([[get_index(vocabulary,word) for word in sentence] for sentence in x_raw])
@@ -93,17 +101,21 @@ def load_data(filename,max_length,max_word):
 	return x, y, vocabulary, vocabulary_inv, df, labels,label_dict
 
 
-def load_dev_test_data(filename,max_length, vocabulary,label_dict):
+def load_dev_test_data(filename,max_length, vocabulary,label_dict,need_pad,is_bytecode,need_replace_number):
 	df = pd.read_csv(filename, sep='@', header=None, encoding='utf8', engine='python')
-	selected = ['Code', 'Tag']
+	selected = ['tag', 'assemble', 'byte']
 	df.columns = selected
-	x_raw = df[selected[1]].apply(lambda x: clean_str(x).split(' ')).tolist()
+	code_index = 1
+	if (is_bytecode):
+		code_index = 2
+	x_raw = df[selected[code_index]].apply(lambda x: clean_str(x, is_bytecode, need_replace_number).split(' ')).tolist()
 	y_raw = df[selected[0]].apply(lambda y: label_dict[y]).tolist()
-	x_raw = pad_sentences(x_raw, max_length)
+	if(need_pad):
+		x_raw = pad_sentences(x_raw, max_length)
 	x = np.array([[get_index(vocabulary,word) for word in sentence] for sentence in x_raw])
 	y = np.array(y_raw)
 	return x,y
 
 if __name__ == "__main__":
 	train_file = './data/train.csv.zip'
-	load_data(train_file,100,10000)
+	#load_data(train_file,100,10000)

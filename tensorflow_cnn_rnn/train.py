@@ -21,15 +21,17 @@ def train_cnn_rnn():
 	training_config = './training_config.json'
 	params = json.loads(open(training_config).read())
 	text_length = params['max_length']
-	x_train, y_train, vocabulary, vocabulary_inv, df, labels,label_dict = data_helper.load_data(file_path+file_name+'.train',text_length,params['max_nb_word'])
+	is_byte = True
+	need_repalce_number = False
+	x_train, y_train, vocabulary, vocabulary_inv, df, labels,label_dict = data_helper.load_data(file_path+file_name+'.train',text_length,params['max_nb_word'],True,is_byte,need_repalce_number)
 
 	# Assign a 300 dimension vector to each word
 	word_embeddings = data_helper.load_embeddings(vocabulary)
 	embedding_mat = [word_embeddings[word] for index, word in enumerate(vocabulary_inv)]
 	embedding_mat = np.array(embedding_mat, dtype = np.float32)
 
-	x_dev,y_dev = data_helper.load_dev_test_data(file_path+file_name+'.dev',text_length,vocabulary,label_dict,)
-	x_test,y_test = data_helper.load_dev_test_data(file_path+file_name+'.test',text_length,vocabulary,label_dict)
+	x_dev,y_dev = data_helper.load_dev_test_data(file_path+file_name+'.dev',text_length,vocabulary,label_dict,True,is_byte,need_repalce_number)
+	x_test,y_test = data_helper.load_dev_test_data(file_path+file_name+'.test',text_length,vocabulary,label_dict,True,is_byte,need_repalce_number)
 
 	logging.info('x_train: {}, x_dev: {}, x_test: {}'.format(len(x_train), len(x_dev), len(x_test)))
 	logging.info('y_train: {}, y_dev: {}, y_test: {}'.format(len(y_train), len(y_dev), len(y_test)))
