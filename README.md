@@ -1,16 +1,16 @@
 # BinaryCompileClassification
 Using deeplearning to solve binary code complie tag classification
 contains:
-tensorflow RNN text classifiction
-tensorflow CNN text classifiction
-tensorflow CNN+RNN text classifiction
+* tensorflow RNN text classifiction
+* tensorflow CNN text classifiction
+* tensorflow CNN+RNN text classifiction
 
-keras RNN text classifiction
-keras CNN text classifiction
-keras CNN+RNN text classifiction
-keras hierarchical rnn text classifiction
+* keras RNN text classifiction
+* keras CNN text classifiction
+* keras CNN+RNN text classifiction
+* keras hierarchical rnn text classifiction
 
-##file introduction
+## file introduction
 1. backend
    Models from other person I use
 2. clean_utils
