@@ -1,10 +1,11 @@
 import os
 import random
 import clean_utils as cu
-TRAIN_PROJECT = ""
-DEV_PROJECT = ""
-TEST_PROJECT = ""
-OUTPUT_PATH = ""
+path = "/home/qiaoyang/codeData/binary_code/newData/"
+TRAIN_PROJECT = path+"2/"
+DEV_PROJECT = path+"3/"
+TEST_PROJECT = path+"1/"
+OUTPUT_PATH = path
 
 def get_data(project_path,output_path,output_name,sample_percent,only_command,need_replace_number):
     file_handler = open(output_path+output_name,'w')
@@ -28,9 +29,12 @@ def get_data(project_path,output_path,output_name,sample_percent,only_command,ne
                 byte_code = code.split('@')[1]
                 byte_code = cu.bytecode_clean(byte_code)
 
-                file_handler.write(tag + '@' + assemble_code + '@' + byte_code + '\n')
+                file_handler.write(tag.replace('O','') + '@' + assemble_code + '@' + byte_code + '\n')
     file_handler.close()
 
 if __name__ == "__main__":
-    print ''
+    get_data(TRAIN_PROJECT,OUTPUT_PATH,'data.train',0.5,False,False)
+    get_data(DEV_PROJECT,OUTPUT_PATH,'data.dev',1,False,False)
+    get_data(TEST_PROJECT,OUTPUT_PATH,'data.test',0.5,False,False)
+
 

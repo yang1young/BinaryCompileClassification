@@ -12,11 +12,11 @@ import clean_utils.clean_utils as cu
 import data_helper
 
 MAX_SENT_LENGTH = 100
-MAX_SENTS = 20
+MAX_SENTS = 40
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
 EMBEDDING_DIM = 200
-MAX_EPOCH = 10
+MAX_EPOCH = 2
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENTS, MAX_SENT_LENGTH), dtype='int32')
@@ -113,18 +113,18 @@ def reload_model(model_name):
 
 
 if __name__ == "__main__":
+    data_path = "/home/qiaoyang/codeData/binary_code/newData/"
+    train_path = "/home/qiaoyang/codeData/binary_code/newData/data.train"
+    dev_path = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
+    test_path = "/home/qiaoyang/codeData/binary_code/newData/data.test"
+    model_path = data_path + 'model/'
 
-    train_path = ""
-    dev_path = ""
-    test_path = ""
-    test_path_d = ""
-    model_path = ""
-    is_bytecode = True
+    is_bytecode = False
     train_texts, train_blocks,train_labels = data_helper.prepare_dl_data(train_path, is_bytecode)
     _,dev_blocks, dev_labels = data_helper.prepare_dl_data(dev_path, is_bytecode)
     _,test_blocks,test_labels = data_helper.prepare_dl_data(test_path, is_bytecode)
-    _, test_blocks_d,test_labels_d = data_helper.prepare_dl_data(test_path_d, is_bytecode)
-
+    #_, test_blocks_d,test_labels_d = data_helper.prepare_dl_data(test_path_d, is_bytecode)
+    print train_texts
     word_index = data_helper.get_tokenizer(train_texts, MAX_NB_WORDS, 'voca')
 
     print('Total %s unique tokens.' % len(word_index))
@@ -132,9 +132,9 @@ if __name__ == "__main__":
     x_train, y_train = data_transfer(word_index, train_blocks, train_labels)
     x_val, y_val = data_transfer(word_index, dev_blocks, dev_labels)
     x_test, y_test = data_transfer(word_index, test_blocks, test_labels)
-    x_test_d, y_test_d = data_transfer(word_index, test_blocks_d, test_labels_d)
+    #x_test_d, y_test_d = data_transfer(word_index, test_blocks_d, test_labels_d)
 
     model = train(x_train, y_train, x_val, y_val, model_path)
     # model = reload_model('weights-improvement-00-0.21.hdf5')
     eval_model(model, x_test, y_test)
-    eval_model(model, x_test_d, y_test_d)
+    #eval_model(model, x_test_d, y_test_d)

@@ -12,6 +12,7 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score
 
 import clean_utils.clean_utils as cu
 import data_helper
+path = "/home/qiaoyang/codeData/binary_code/newData/"
 
 
 def tf_idf_model(x_train):
@@ -27,7 +28,7 @@ def tf_idf_model(x_train):
 def eval_model(real, predict, name):
     assert len(predict) == len(real)
     print name
-    print 'crosstab:{0}'.format(pd.crosstab(real, predict, margins=True))
+    print 'crosstab:{0}'.format(pd.crosstab(np.asarray(real), np.asarray(predict), margins=True))
     print 'precision:{0}'.format(precision_score(real, predict, average='macro'))
     print 'recall:{0}'.format(recall_score(real, predict, average='macro'))
     print 'accuracy:{0}'.format(accuracy_score(real, predict))
@@ -38,6 +39,7 @@ def train(train_path, test_path, test_path_duplicate, is_bytecode):
     test_x, test_y = data_helper.prepare_classification_data(test_path, is_bytecode)
     test_x_d, test_y_d = data_helper.prepare_classification_data(test_path_duplicate, is_bytecode)
     print len(train_y)
+    print len(train_x)
     x_train, count_vect, tfidf_transformer = tf_idf_model(train_x)
 
     x_test = count_vect.transform(test_x)
@@ -55,6 +57,30 @@ def train(train_path, test_path, test_path_duplicate, is_bytecode):
     eval_model(test_y_d, predict_duplicate, "contains duplicated data evaluation")
 
     return clf, count_vect, tfidf_transformer
+
+
+def train_no_duplicate(train_path,test_path, is_bytecode):
+    train_x, train_y = data_helper.prepare_classification_data(train_path, is_bytecode)
+    test_x, test_y = data_helper.prepare_classification_data(test_path, is_bytecode)
+    print len(train_y)
+    print len(train_x)
+    x_train, count_vect, tfidf_transformer = tf_idf_model(train_x)
+    print 'finish tf idf'
+    # clf = MultinomialNB().fit(x_train, y_train)
+    clf = tree.DecisionTreeClassifier().fit(x_train, train_y)
+    print 'finish training'
+    del train_x,train_y,x_train
+    # data_helper.save_obj(clf,path,'clf')
+    # data_helper.save_obj(count_vect,path,'countvec')
+    # data_helper.save_obj(tfidf_transformer,path,'tfidf')
+    x_test = count_vect.transform(test_x)
+    x_test = tfidf_transformer.transform(x_test)
+    print 'finish test data'
+    predict_distict = clf.predict(x_test)
+    print len(predict_distict)
+    eval_model(test_y, predict_distict, "distinct data evaluation")
+    return clf, count_vect, tfidf_transformer
+
 
 
 def ensamble_test(data_path, model, sample_percent,count_vect, tfidf_transformer, is_bytecode):
@@ -90,10 +116,14 @@ def ensamble_test(data_path, model, sample_percent,count_vect, tfidf_transformer
 
 
 if __name__ == "__main__":
-    data_path = ""
-    train_path = ""
-    test_path = ""
-    test_path_duplicate = ""
+    data_path = "/home/qiaoyang/codeData/binary_code/newData/"
+    train_path = "/home/qiaoyang/codeData/binary_code/newData/data.train"
+    test_path = "/home/qiaoyang/codeData/binary_code/newData/data.test"
+    test_path_duplicate = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
     is_bytecode = True
-    clf, count_vect, tfidf_transformer = train(train_path, test_path, test_path_duplicate, is_bytecode)
-    ensamble_test(data_path, clf, 0.2, count_vect, tfidf_transformer, is_bytecode)
+    clf, count_vect, tfidf_transformer = train_no_duplicate(train_path, test_path,is_bytecode)
+    # clf = data_helper.load_obj(path,'clf')
+    # count_vect = data_helper.load_obj(path,'countvec')
+    # tfidf_transformer = data_helper.load_obj(path,'tfidf')
+    # predict(clf, count_vect, tfidf_transformer, test_path, is_bytecode)
+    #ensamble_test(data_path, clf, 0.2, count_vect, tfidf_transformer, is_bytecode)

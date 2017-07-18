@@ -8,8 +8,8 @@ from collections import Counter
 import clean_utils.clean_utils as cu
 from keras.utils.np_utils import to_categorical
 
-data_path = "/home/qiaoyang/codeData/binary_code/data/small_sample/"
-model_dir = '/home/qiaoyang/pythonProject/BinaryCompileClassification/models/'
+# data_path = "/home/qiaoyang/codeData/binary_code/data/small_sample/"
+# model_dir = '/home/qiaoyang/pythonProject/BinaryCompileClassification/models/'
 
 # process labels
 def label_to_categorical(labels, need_to_categorical):
@@ -30,12 +30,13 @@ def prepare_classification_data(data_path,is_bytecode):
     df = pd.read_csv(data_path, sep='@', header=None, encoding='utf8', engine='python')
     selected = ['tag', 'assemble','byte']
     df.columns = selected
-    code_index =1
     if(is_bytecode):
-        code_index =2
-    texts = df[selected[code_index]].tolist()
-    #texts = [s.encode('utf-8') for s in texts]
+        texts = df[selected[2]].values.astype('U')
+    else:
+        texts = df[selected[1]]
+        texts = [s.encode('utf-8') for s in texts]
     labels = df[selected[0]].tolist()
+    print texts[:3]
     return texts,labels
 
 
@@ -68,12 +69,13 @@ def load_obj(path,name):
         return pickle.load(f)
 
 
-def get_tokenizer(all_text,max_word,voc_name):
+def get_tokenizer(all_text,max_word,voca_path):
 
     texts = []
     for text in all_text:
-        temp = cu.remove_blank(cu._WORD_SPLIT.split(text))
-        texts.extend(temp)
+        if(text!=None):
+            temp = cu.remove_blank(cu._WORD_SPLIT.split(text))
+            texts.extend(temp)
     counts = Counter(texts)
     common_list = counts.most_common()
     common_list.sort(key=lambda x: x[1], reverse=True)
@@ -85,7 +87,7 @@ def get_tokenizer(all_text,max_word,voc_name):
     word_index = dict()
     for word,index in zip(word_picked,range(max_word)):
         word_index[word] = index+1
-    save_obj(word_index,model_dir,voc_name)
+    save_obj(word_index,voca_path,'voca')
     print "unknown word index is "+str(word_index.get('<unknown>'))
     print "Nuber of unique token is "+str(len(word_index))
     return word_index

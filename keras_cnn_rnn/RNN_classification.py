@@ -15,7 +15,7 @@ MAX_SENT_LENGTH = 100
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
 EMBEDDING_DIM = 200
-MAX_EPOCH = 100
+MAX_EPOCH = 2
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENT_LENGTH), dtype='int32')
@@ -116,10 +116,10 @@ def train(x_train, y_train,x_val, y_val,model_path):
     data_helper.save_obj(history.history, model_path, "train.log")
     return model
 
-def reload_model(model_name):
+def reload_model(model_path,model_name):
     model = rnn_model()
     # load weights
-    model.load_weights(data_helper.model_dir + model_name)
+    model.load_weights(model_path + model_name)
     # Compile model (required to make predictions)
     #optimizer = keras.optimizers.Adagrad(lr=0.1, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',
@@ -131,31 +131,33 @@ def reload_model(model_name):
 
 
 if __name__ == "__main__":
-    train_path = ""
-    dev_path = ""
-    test_path = ""
-    test_path_d = ""
-    model_path = ""
-    is_bytecode = True
+
+    data_path = "/home/qiaoyang/codeData/binary_code/newData/"
+    train_path = "/home/qiaoyang/codeData/binary_code/newData/data.train"
+    dev_path = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
+    test_path = "/home/qiaoyang/codeData/binary_code/newData/data.test"
+    model_path = data_path+'model/'
+
+    is_bytecode = False
     train_texts, train_labels = data_helper.prepare_classification_data(train_path, is_bytecode)
     dev_texts, dev_labels = data_helper.prepare_classification_data(dev_path, is_bytecode)
     test_texts, test_labels = data_helper.prepare_classification_data(test_path, is_bytecode)
-    test_texts_d, test_labels_d = data_helper.prepare_classification_data(test_path_d, is_bytecode)
+    #test_texts_d, test_labels_d = data_helper.prepare_classification_data(test_path_d, is_bytecode)
 
     # tokenizer = Tokenizer(nb_words=MAX_NB_WORDS)
     # tokenizer.fit_on_texts(train_texts)
     # tokenizer.word_index['UKNOWN'] = MAX_NB_WORDS
     # word_index = tokenizer.word_index
-    word_index = data_helper.get_tokenizer(train_texts, MAX_NB_WORDS, 'voca')
+    word_index = data_helper.get_tokenizer(train_texts, MAX_NB_WORDS, model_path)
 
     print('Total %s unique tokens.' % len(word_index))
 
     x_train, y_train = data_transfer(word_index, train_texts, train_labels)
     x_val, y_val = data_transfer(word_index, dev_texts, dev_labels)
     x_test, y_test = data_transfer(word_index, test_texts, test_labels)
-    x_test_d, y_test_d = data_transfer(word_index, test_texts_d, test_labels_d)
+    #x_test_d, y_test_d = data_transfer(word_index, test_texts_d, test_labels_d)
 
     model = train(x_train,y_train,x_val,y_val,model_path)
-    #model = reload_model('weights-improvement-00-0.21.hdf5')
+    #model = reload_model(model_path,'weights-improvement-01-0.50.hdf5')
     eval_model(model,x_test,y_test)
-    eval_model(model,x_test_d,y_test_d)
+    #eval_model(model,x_test_d,y_test_d)
