@@ -12,7 +12,6 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score
 
 import clean_utils.clean_utils as cu
 import data_helper
-path = "/home/qiaoyang/codeData/binary_code/newData/"
 
 
 def tf_idf_model(x_train):
@@ -116,10 +115,10 @@ def ensamble_test(data_path, model, sample_percent,count_vect, tfidf_transformer
 
 
 if __name__ == "__main__":
-    data_path = "/home/qiaoyang/codeData/binary_code/newData/"
-    train_path = "/home/qiaoyang/codeData/binary_code/newData/data.train"
-    test_path = "/home/qiaoyang/codeData/binary_code/newData/data.test"
-    test_path_duplicate = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
+    path = "/home/yang/data/"
+    train_path = path+"data.train"
+    test_path = path+"data.test"
+    #test_path_duplicate = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
     is_bytecode = True
     clf, count_vect, tfidf_transformer = train_no_duplicate(train_path, test_path,is_bytecode)
     # clf = data_helper.load_obj(path,'clf')

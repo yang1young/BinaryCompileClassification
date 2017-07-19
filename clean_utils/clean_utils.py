@@ -71,5 +71,13 @@ def assemble_clean(text,need_replace_number):
 def bytecode_clean(text):
     text = re.sub('@', '', text)
     text = re.sub(' +', ' ', text)
-    text = re.sub('\n+', '\n', text)
+    text = re.sub('\n', '', text)
+    texts = text.split("$")
+    new_texts = []
+    for t in texts:
+        line = t.strip()
+        ts = [line[i:i + 2] for i in range(0, len(line), 2)]
+        new_texts.append(' '.join(ts))
+    text = ' $ '.join(new_texts)
+    text = re.sub(' +', ' ', text)
     return text.strip()

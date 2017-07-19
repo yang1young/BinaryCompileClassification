@@ -1,7 +1,8 @@
 import os
 import random
 import clean_utils as cu
-path = "/home/qiaoyang/codeData/binary_code/newData/"
+#path = "/home/qiaoyang/codeData/binary_code/newData/"
+path = "/home/yang/data/"
 TRAIN_PROJECT = path+"2/"
 DEV_PROJECT = path+"3/"
 TEST_PROJECT = path+"1/"
