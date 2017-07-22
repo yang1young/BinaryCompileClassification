@@ -15,7 +15,7 @@ MAX_SENT_LENGTH = 100
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
 EMBEDDING_DIM = 200
-MAX_EPOCH = 2
+MAX_EPOCH = 6
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENT_LENGTH), dtype='int32')
@@ -158,6 +158,6 @@ if __name__ == "__main__":
     #x_test_d, y_test_d = data_transfer(word_index, test_texts_d, test_labels_d)
 
     model = train(x_train,y_train,x_val,y_val,model_path)
-    #model = reload_model(model_path,'weights-improvement-01-0.50.hdf5')
+    #model = reload_model(model_path,'weights-improvement-05-0.51.hdf5')
     eval_model(model,x_test,y_test)
     #eval_model(model,x_test_d,y_test_d)

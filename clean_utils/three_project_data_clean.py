@@ -1,12 +1,12 @@
 import os
 import random
 import clean_utils as cu
-#path = "/home/qiaoyang/codeData/binary_code/newData/"
-path = "/home/yang/data/"
+path = "/home/qiaoyang/codeData/binary_code/newData/"
+#path = "/home/yang/data/"
 TRAIN_PROJECT = path+"2/"
 DEV_PROJECT = path+"3/"
 TEST_PROJECT = path+"1/"
-OUTPUT_PATH = path
+OUTPUT_PATH = path+"train_repalce_number/"
 
 def get_data(project_path,output_path,output_name,sample_percent,only_command,need_replace_number):
     file_handler = open(output_path+output_name,'w')
@@ -34,8 +34,9 @@ def get_data(project_path,output_path,output_name,sample_percent,only_command,ne
     file_handler.close()
 
 if __name__ == "__main__":
-    get_data(TRAIN_PROJECT,OUTPUT_PATH,'data.train',0.5,False,False)
-    get_data(DEV_PROJECT,OUTPUT_PATH,'data.dev',1,False,False)
-    get_data(TEST_PROJECT,OUTPUT_PATH,'data.test',0.5,False,False)
+    need_replace_number = True
+    get_data(TRAIN_PROJECT,OUTPUT_PATH,'data.train',0.5,False,need_replace_number)
+    get_data(DEV_PROJECT,OUTPUT_PATH,'data.dev',1,False,need_replace_number)
+    get_data(TEST_PROJECT,OUTPUT_PATH,'data.test',0.5,False,need_replace_number)
 
 
