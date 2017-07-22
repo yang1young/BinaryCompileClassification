@@ -73,7 +73,7 @@ def get_tokenizer(all_text,max_word,voca_path):
 
     texts = []
     for text in all_text:
-        if(text!=None):
+        if(isinstance(text, basestring)):
             temp = cu.remove_blank(cu._WORD_SPLIT.split(text))
             texts.extend(temp)
     counts = Counter(texts)
