@@ -13,7 +13,7 @@ class RNN_Model(object):
 
         num_step=config.num_step
         self.input_data=tf.placeholder(tf.int32,[None,num_step])
-        self.target = tf.placeholder(tf.int64,[None])
+        self.target = tf.placeholder(tf.int64,[None, 4])
         self.mask_x = tf.placeholder(tf.float32,[num_step,None])
 
         class_num=config.class_num
@@ -64,7 +64,7 @@ class RNN_Model(object):
             self.logits = tf.matmul(out_put,softmax_w)+softmax_b
 
         with tf.name_scope("loss"):
-            self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(self.logits+1e-10,self.target)
+            self.loss = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits+1e-10,labels=self.target)
             self.cost = tf.reduce_mean(self.loss)
 
         with tf.name_scope("accuracy"):

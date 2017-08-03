@@ -1,5 +1,6 @@
 import os
 import re
+import csv
 import pickle
 import random
 import numpy as np
@@ -7,7 +8,8 @@ import pandas as pd
 from collections import Counter
 import clean_utils.clean_utils as cu
 from keras.utils.np_utils import to_categorical
-
+import sys
+csv.field_size_limit(sys.maxsize)
 # data_path = "/home/qiaoyang/codeData/binary_code/data/small_sample/"
 # model_dir = '/home/qiaoyang/pythonProject/BinaryCompileClassification/models/'
 
@@ -34,7 +36,7 @@ def prepare_classification_data(data_path,is_bytecode):
         texts = df[selected[2]].values.astype('U')
     else:
         texts = df[selected[1]]
-        texts = [s.encode('utf-8') for s in texts]
+        #texts = [s.encode('utf-8') for s in texts]
     labels = df[selected[0]].tolist()
     print texts[:3]
     return texts,labels

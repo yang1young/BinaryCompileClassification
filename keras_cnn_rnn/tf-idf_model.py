@@ -115,12 +115,12 @@ def ensamble_test(data_path, model, sample_percent,count_vect, tfidf_transformer
 
 
 if __name__ == "__main__":
-    path = "/home/qiaoyang/codeData/binary_code/newData/"
+    path = "/home/qiaoyang/codeData/binary_code/newData2/top_byte/"
     #path = path+"train_repalce_number/"
     train_path = path+"data.train"
     test_path = path+"data.test"
     #test_path_duplicate = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
-    is_bytecode = False
+    is_bytecode = True
     clf, count_vect, tfidf_transformer = train_no_duplicate(train_path, test_path,is_bytecode)
     # clf = data_helper.load_obj(path,'clf')
     # count_vect = data_helper.load_obj(path,'countvec')

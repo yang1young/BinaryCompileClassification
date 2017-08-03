@@ -14,16 +14,16 @@ FLAGS = flags.FLAGS
 flags.DEFINE_integer('batch_size',64,'the batch_size of the training procedure')
 flags.DEFINE_float('lr',0.1,'the learning rate')
 flags.DEFINE_float('lr_decay',0.6,'the learning rate decay')
-flags.DEFINE_integer('vocabulary_size',20000,'vocabulary_size')
+flags.DEFINE_integer('vocabulary_size',10000,'vocabulary_size')
 flags.DEFINE_integer('emdedding_dim',200,'embedding dim')
 flags.DEFINE_integer('hidden_neural_size',128,'LSTM hidden neural size')
 flags.DEFINE_integer('hidden_layer_num',1,'LSTM hidden layer num')
 flags.DEFINE_string('dataset_path','data/subj0.pkl','dataset path')
-flags.DEFINE_integer('max_len',40,'max_len of training sentence')
+flags.DEFINE_integer('max_len',150,'max_len of training sentence')
 flags.DEFINE_integer('valid_num',100,'epoch num of validation')
 flags.DEFINE_integer('checkpoint_num',1000,'epoch num of checkpoint')
 flags.DEFINE_float('init_scale',0.1,'init scale')
-flags.DEFINE_integer('class_num',2,'class num')
+flags.DEFINE_integer('class_num',4,'class num')
 flags.DEFINE_float('keep_prob',0.5,'dropout rate')
 flags.DEFINE_integer('num_epoch',60,'num epoch')
 flags.DEFINE_integer('max_decay_epoch',30,'num epoch')
@@ -166,7 +166,7 @@ def train_step(filepath,is_byte,need_replace_number):
 
 
 def main(_):
-    filepath = ""
+    filepath = "/home/qiaoyang/codeData/binary_code/newData2/data"
     train_step(filepath,True,False)
 
 

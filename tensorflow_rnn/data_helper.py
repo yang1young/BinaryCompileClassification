@@ -14,11 +14,14 @@ def padding_and_generate_mask(x, y, new_x, new_y, new_mask_x,max_len):
         if len(x) <= max_len:
             new_x[i, 0:len(x)] = x
             new_mask_x[0:len(x), i] = 1
-            new_y[i] = y
+
+            new_y[i] = np.array(y)
         else:
             new_x[i] = (x[0:max_len])
             new_mask_x[:, i] = 1
-            new_y[i] = y
+
+            new_y[i] = np.array(y)
+
     new_set = (new_x, new_y, new_mask_x)
     del new_x, new_y
     return new_set
@@ -28,19 +31,21 @@ def load_data(filename,max_length,max_word,is_bytecode,need_replace_number):
 
     x_train, y_train, vocabulary, vocabulary_inv, df, labels, label_dict = daf.load_data(
         filename+ '.train', max_length, max_word, False,is_bytecode, need_replace_number)
+    print y_train
     x_dev, y_dev = daf.load_dev_test_data(filename+ '.dev', max_length, vocabulary, label_dict,
                                                   False,is_bytecode, need_replace_number)
     x_test, y_test = daf.load_dev_test_data(filename + '.test', max_length, vocabulary,
                                                     label_dict, False,is_bytecode, need_replace_number)
 
+    class_num = 4
     new_train_set_x=np.zeros([len(y_train),max_length])
-    new_train_set_y=np.zeros(len(y_train))
+    new_train_set_y=np.zeros([len(y_train),class_num])
 
     new_valid_set_x=np.zeros([len(y_dev),max_length])
-    new_valid_set_y=np.zeros(len(y_dev))
+    new_valid_set_y=np.zeros([len(y_dev),class_num])
 
     new_test_set_x=np.zeros([len(y_test),max_length])
-    new_test_set_y=np.zeros(len(y_test))
+    new_test_set_y=np.zeros([len(y_test),class_num])
 
     mask_train_x=np.zeros([max_length,len(y_train)])
     mask_test_x=np.zeros([max_length,len(y_test)])

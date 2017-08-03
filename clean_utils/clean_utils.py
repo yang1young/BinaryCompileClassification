@@ -52,7 +52,7 @@ def get_normalize_code(code,max_lenghth):
     result = " ".join(result.split())
     return result
 
-def assemble_clean(text,need_replace_number):
+def assemble_clean(text,need_replace_number,max_length,need_reverse):
     try:
         if (text == '' or text == None):
             return ''
@@ -63,12 +63,18 @@ def assemble_clean(text,need_replace_number):
         text = re.sub('@', '', text)
         text = re.sub(' +', ' ', text)
         text = re.sub('\n+', '\n', text)
+        if (max_length != 0):
+            if(not need_reverse):
+                text = ' '.join(text.split(' ')[:max_length])+ ' ..' if len(text.split(' ')) > max_length else text
+            else:
+                text = ' .. ' + ' '.join(text.split(' ')[-max_length:]) if len(text.split(' ')) > max_length else text
+
     except Exception, e:
         print e
         print 'ERROR OF clean'
     return text.strip()
 
-def bytecode_clean(text):
+def bytecode_clean(text,max_length,need_reverse):
     text = re.sub('@', '', text)
     text = re.sub(' +', ' ', text)
     text = re.sub('\n', '', text)
@@ -80,4 +86,9 @@ def bytecode_clean(text):
         new_texts.append(' '.join(ts))
     text = ' $ '.join(new_texts)
     text = re.sub(' +', ' ', text)
+    if (max_length != 0):
+        if (not need_reverse):
+            text = ' '.join(text.split(' ')[:max_length]) + ' ..' if len(text.split(' ')) > max_length else text
+        else:
+            text = ' .. '+' '.join(text.split(' ')[-max_length:]) if len(text.split(' ')) > max_length else text
     return text.strip()
