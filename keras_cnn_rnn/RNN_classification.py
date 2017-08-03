@@ -132,7 +132,7 @@ def reload_model(model_path,model_name):
 
 if __name__ == "__main__":
 
-    data_path = "/home/qiaoyang/codeData/binary_code/newData2/top_byte/"
+    data_path = "/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/"
     train_path = data_path+"data.train"
     dev_path = data_path+"data.dev"
     test_path = data_path+"data.test"

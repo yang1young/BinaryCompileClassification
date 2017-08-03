@@ -80,13 +80,57 @@ def get_data_top_byte(project_path,output_path,output_name,sample_percent,only_c
     print count_vect
     file_handler.close()
 
+def get_data_chunk(project_path,output_path,output_name,sample_percent,only_command,need_replace_number,max_length):
+    file_handler = open(output_path+output_name,'w')
+    files = os.listdir(project_path)
+    count_vect = [0,0,0,0]
+    error_count = 0
+    for file in files:
+        keep = random.random()
+        tag = (file.split('$')[0]).split("_")[3]
+        if(tag.replace('O','').isdigit()):
+           t = int(tag.replace('O', ''))
+           if ((keep <= sample_percent[0] and t==0) or (keep <= sample_percent[1] and t==1)
+               or (keep <= sample_percent[2] and t==2) or (keep <= sample_percent[3] and t==3)):
+                count_vect[t] += 1
+                codes = open(project_path + file, 'r').readlines()
+                assemble_code = ''
+                byte_code = ''
+                for code in codes:
+                    assemble_code += cu.assemble_clean(code.split('@')[0],need_replace_number,0,False)+' '
+                    byte_code += cu.bytecode_clean(code.split('@')[1],0,need_reverse=False)+' '
+                count = 0
+                assemble_result = ''
+                byte_result = ''
+                for assemble,byte in zip(assemble_code.split(' '),byte_code.split(' ')):
+                    count+=1
+                    if(count<=max_length):
+                        assemble_result +=assemble+' '
+                        byte_result +=byte+' '
+                    if(count==max_length):
+                       count = 0
+                       if(assemble_result!='' and byte_result!='' and len(assemble_result)!=0 and len(byte_result)!=0):
+                            file_handler.write(tag.replace('O', '') + '@' + assemble_result.replace(' +','').replace('"','') + '@' + byte_result.replace(' +','') + '\n')
+                       assemble_result = ''
+                       byte_result = ''
+        else:
+            error_count+=1
+            print error_count
+    print count_vect
+    file_handler.close()
+
+
 if __name__ == "__main__":
     need_replace_number = False
     # get_data(TRAIN_PROJECT,OUTPUT_PATH,'data.train',[0.38,0.56,1,1],False,need_replace_number,MAX_LENGTH)
     # get_data(DEV_PROJECT,OUTPUT_PATH,'data.dev',[1,1,1,1],False,need_replace_number,MAX_LENGTH)
     # get_data(TEST_PROJECT,OUTPUT_PATH,'data.test',[0.5,0.5,0.5,0.5],False,need_replace_number,MAX_LENGTH)
-    OUTPUT_PATH = OUTPUT_PATH+'top_byte/'
-    get_data_top_byte(TRAIN_PROJECT, OUTPUT_PATH, 'data.train', [0.4, 0.56, 1, 1], False, need_replace_number, MAX_LENGTH)
-    get_data_top_byte(DEV_PROJECT, OUTPUT_PATH, 'data.dev', [1, 1, 1, 1], False, need_replace_number, MAX_LENGTH)
-    get_data_top_byte(TEST_PROJECT, OUTPUT_PATH, 'data.test', [0.5, 0.5, 0.5, 0.5], False, need_replace_number, MAX_LENGTH)
+    # OUTPUT_PATH = OUTPUT_PATH+'top_byte/'
+    # get_data_top_byte(TRAIN_PROJECT, OUTPUT_PATH, 'data.train', [0.4, 0.56, 1, 1], False, need_replace_number, MAX_LENGTH)
+    # get_data_top_byte(DEV_PROJECT, OUTPUT_PATH, 'data.dev', [1, 1, 1, 1], False, need_replace_number, MAX_LENGTH)
+    # get_data_top_byte(TEST_PROJECT, OUTPUT_PATH, 'data.test', [0.5, 0.5, 0.5, 0.5], False, need_replace_number, MAX_LENGTH)
 
+    OUTPUT_PATH = OUTPUT_PATH+'chunk_byte/'
+    get_data_chunk(TRAIN_PROJECT, OUTPUT_PATH, 'data.train', [0.4, 0.56, 1, 1], False, need_replace_number, MAX_LENGTH)
+    get_data_chunk(DEV_PROJECT, OUTPUT_PATH, 'data.dev', [1, 1, 1, 1], False, need_replace_number, MAX_LENGTH)
+    get_data_chunk(TEST_PROJECT, OUTPUT_PATH, 'data.test', [0.5, 0.5, 0.5, 0.5], False, need_replace_number, MAX_LENGTH)

@@ -115,7 +115,7 @@ def ensamble_test(data_path, model, sample_percent,count_vect, tfidf_transformer
 
 
 if __name__ == "__main__":
-    path = "/home/qiaoyang/codeData/binary_code/newData2/top_byte/"
+    path = "/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/"
     #path = path+"train_repalce_number/"
     train_path = path+"data.train"
     test_path = path+"data.test"
