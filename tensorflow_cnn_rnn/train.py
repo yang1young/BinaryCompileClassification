@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 logging.getLogger().setLevel(logging.INFO)
 
 def train_cnn_rnn():
-	file_path = '/home/qiaoyang/codeData/binary_code/data/small_sample/'
+	file_path = '/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/'
 	file_name = 'data'
 
 	training_config = './training_config.json'

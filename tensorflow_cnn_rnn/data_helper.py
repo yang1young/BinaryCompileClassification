@@ -15,9 +15,9 @@ logging.getLogger().setLevel(logging.INFO)
 
 def clean_str(s,is_bytecode,need_replace_number):
 	if(is_bytecode):
-		str = cu.bytecode_clean(s,150)
+		str = cu.bytecode_clean(s,150,False)
 	else:
-		str = cu.assemble_clean(s,need_replace_number,150)
+		str = cu.assemble_clean(s,need_replace_number,150,False)
 	return str
 
 def load_embeddings(vocabulary):

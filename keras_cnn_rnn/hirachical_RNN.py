@@ -11,7 +11,7 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score
 import clean_utils.clean_utils as cu
 import data_helper
 
-MAX_SENT_LENGTH = 100
+MAX_SENT_LENGTH = 150
 MAX_SENTS = 40
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
@@ -113,10 +113,10 @@ def reload_model(model_name):
 
 
 if __name__ == "__main__":
-    data_path = "/home/qiaoyang/codeData/binary_code/newData/"
-    train_path = "/home/qiaoyang/codeData/binary_code/newData/data.train"
-    dev_path = "/home/qiaoyang/codeData/binary_code/newData/data.dev"
-    test_path = "/home/qiaoyang/codeData/binary_code/newData/data.test"
+    data_path = "/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/"
+    train_path = data_path+"data.train"
+    dev_path = data_path+"data.dev"
+    test_path = data_path+"data.test"
     model_path = data_path + 'model/'
 
     is_bytecode = True

@@ -3,11 +3,11 @@ import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
 from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, LSTM
-from keras.layers import Dense, Input, Flatten
+from keras.layers import Dense, Input, Flatten,Dropout
 from keras.models import Model, Sequential
 from keras.utils.np_utils import to_categorical
 from sklearn.metrics import precision_score, recall_score, accuracy_score
-
+from keras.layers.normalization import BatchNormalization
 import clean_utils.clean_utils as cu
 import data_helper
 
@@ -15,7 +15,7 @@ MAX_SENT_LENGTH = 150
 NUM_CLASS = 4
 MAX_NB_WORDS = 10000
 EMBEDDING_DIM = 200
-MAX_EPOCH = 6
+MAX_EPOCH = 10
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENT_LENGTH), dtype='int32')
@@ -48,10 +48,9 @@ def rnn_model():
     #model.add(Dropout(0.5))
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
     #model.add(LSTM(200,kernel_initializer =initial,dropout=0.8,return_sequences=True).supports_masking)
-    layer1 = LSTM(100,kernel_initializer =initial)
-    model.add(layer1)
-    layer2 = Dense(NUM_CLASS, activation='softmax')
-    model.add(layer2)
+    model.add(LSTM(200,kernel_initializer =initial,dropout=0.5,return_sequences=True))
+    model.add(LSTM(100,kernel_initializer =initial,dropout=0.5))
+    model.add(Dense(NUM_CLASS, activation='softmax'))
     return model
 
 def cnn_model():
@@ -66,8 +65,10 @@ def cnn_model():
         convs.append(l_pool)
 
     l_merge = Merge(mode='concat', concat_axis=1)(convs)
-    l_cov1 = Conv1D(128, 5, activation='relu')(l_merge)
-    l_pool1 = MaxPooling1D(5)(l_cov1)
+    l_dropout = Dropout(0.5)(l_merge)
+    l_cov1 = Conv1D(128, 5, activation='relu')(l_dropout)
+    l_bn = BatchNormalization()(l_cov1)
+    l_pool1 = MaxPooling1D(5)(l_bn)
     l_cov2 = Conv1D(128, 5, activation='relu')(l_pool1)
     l_pool2 = MaxPooling1D(5)(l_cov2)
     l_flat = Flatten()(l_pool2)
@@ -99,7 +100,7 @@ def eval_model(model,x,y):
 
 
 def train(x_train, y_train,x_val, y_val,model_path):
-    model = cnn_model()
+    model = rnn_model()
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])

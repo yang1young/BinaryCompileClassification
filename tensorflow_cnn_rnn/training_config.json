@@ -10,6 +10,6 @@
     "non_static": true,
     "num_epochs": 10,
     "num_filters": 128,
-    "max_length":100,
+    "max_length":150,
     "max_nb_word":10000
 }
