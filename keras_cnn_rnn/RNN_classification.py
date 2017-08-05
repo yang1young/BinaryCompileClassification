@@ -139,7 +139,7 @@ if __name__ == "__main__":
     test_path = data_path+"data.test"
     model_path = data_path+'model/'
 
-    is_bytecode = True
+    is_bytecode = False
     train_texts, train_labels = data_helper.prepare_classification_data(train_path, is_bytecode)
     dev_texts, dev_labels = data_helper.prepare_classification_data(dev_path, is_bytecode)
     test_texts, test_labels = data_helper.prepare_classification_data(test_path, is_bytecode)

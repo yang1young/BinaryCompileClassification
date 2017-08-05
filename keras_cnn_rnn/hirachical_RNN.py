@@ -48,13 +48,13 @@ def model_structure():
     embedded_sequences = Embedding(input_dim=MAX_NB_WORDS+1,output_dim=EMBEDDING_DIM, input_length=MAX_SENT_LENGTH,trainable=True,mask_zero=True)(
         sentence_input)
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
-    l_lstm = LSTM(100,kernel_initializer =initial)(embedded_sequences)
+    l_lstm = LSTM(100,kernel_initializer =initial,dropout=0.5)(embedded_sequences)
     sentEncoder = Model(sentence_input, l_lstm)
 
     review_input = Input(shape=(MAX_SENTS, MAX_SENT_LENGTH), dtype='float32')
     #review_input = Masking(mask_value=12345,input_shape=(MAX_SENTS, MAX_SENT_LENGTH))(temp_input)
     review_encoder = TimeDistributed(sentEncoder)(review_input)
-    l_lstm_sent = LSTM(100,kernel_initializer =initial)(review_encoder)
+    l_lstm_sent = LSTM(100,kernel_initializer =initial,dropout=0.5)(review_encoder)
     preds = Dense(NUM_CLASS, activation='softmax')(l_lstm_sent)
     model = Model(review_input, preds)
     return model

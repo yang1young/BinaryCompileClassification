@@ -38,7 +38,7 @@ def prepare_classification_data(data_path,is_bytecode):
         texts = df[selected[1]]
         #texts = [s.encode('utf-8') for s in texts]
     labels = df[selected[0]].tolist()
-    print texts[:3]
+    print texts[0]
     return texts,labels
 
 
