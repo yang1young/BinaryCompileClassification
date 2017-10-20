@@ -2,15 +2,17 @@ import os
 import subprocess
 
 origin_path = "/home/qiaoyang/codeData/molili/ProgramData/"
-new_path = "/home/qiaoyang/bisheData/binary_source/"
+new_path = "/home/qiaoyang/bisheData/binary_source_nohead/"
 binary_path = "/home/qiaoyang/bisheData/binary_out/"
+
+
 head = "#include <iostream>\n#include <stdio.h>\n#include <memory.h>\n" \
        "#include <string.h>\n#include <math.h>\n#include <malloc.h>\n" \
        "#include <stdlib.h>\n#include <iomanip>\n#include <algorithm>\n" \
        "using namespace std;\n#define PI 3.14159265\n" \
        "\n\n"
 
-def reformate(origin_path,new_path):
+def reformate(origin_path,new_path,need_head):
     dirs = os.listdir(origin_path)
     dirs.sort(key = lambda x:int(x))
     for dir in dirs:
@@ -27,7 +29,10 @@ def reformate(origin_path,new_path):
                 code = code.replace("void main()","int main()")
                 code = code.replace("void main ()","int main()")
             with open(new_path+dir+'/'+str(count)+'.cpp','w') as f_write:
-                f_write.write(head+code)
+                if(need_head):
+                    f_write.write(head+code)
+                else:
+                    f_write.write(code)
             count+=1
 
 def compile(path):
@@ -50,7 +55,8 @@ def compile(path):
     i = 0
     for l in total:
         print str(i)+'--'+str(l)
+        i+=1
 
 
-reformate(origin_path,new_path)
-compile(new_path)
+reformate(origin_path,new_path,False)
+#compile(new_path)
