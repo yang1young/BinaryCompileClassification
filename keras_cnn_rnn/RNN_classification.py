@@ -12,10 +12,10 @@ import clean_utils.clean_utils as cu
 import data_helper
 
 MAX_SENT_LENGTH = 150
-NUM_CLASS = 4
+NUM_CLASS = 104
 MAX_NB_WORDS = 10000
-EMBEDDING_DIM = 200
-MAX_EPOCH = 10
+EMBEDDING_DIM = 300
+MAX_EPOCH = 1
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENT_LENGTH), dtype='int32')
@@ -48,8 +48,8 @@ def rnn_model():
     #model.add(Dropout(0.5))
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
     #model.add(LSTM(200,kernel_initializer =initial,dropout=0.8,return_sequences=True).supports_masking)
-    model.add(LSTM(200,kernel_initializer =initial,dropout=0.5,return_sequences=True))
-    model.add(LSTM(100,kernel_initializer =initial,dropout=0.5))
+    model.add(LSTM(300,kernel_initializer =initial,dropout=0.5,return_sequences=True))
+    model.add(LSTM(200,kernel_initializer =initial,dropout=0.5))
     model.add(Dense(NUM_CLASS, activation='softmax'))
     return model
 
@@ -132,12 +132,12 @@ def reload_model(model_path,model_name):
 
 
 if __name__ == "__main__":
-
-    data_path = "/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/"
-    train_path = data_path+"data.train"
-    dev_path = data_path+"data.dev"
-    test_path = data_path+"data.test"
-    model_path = data_path+'model/'
+    path = "/home/qiaoyang/bishe/BinaryCompileClassification/"
+    data_path = path+"data/"
+    train_path = data_path+"train.txt"
+    dev_path = data_path+"dev.txt"
+    test_path = data_path+"test.txt"
+    model_path = path+'model/'
 
     is_bytecode = False
     train_texts, train_labels = data_helper.prepare_classification_data(train_path, is_bytecode)

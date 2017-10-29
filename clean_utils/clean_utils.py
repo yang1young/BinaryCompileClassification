@@ -6,7 +6,7 @@ import mistune
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-_WORD_SPLIT = re.compile(b"([,+\-&!%'._?:|=\s/\*^<>$@\[\](){}#;])")
+_WORD_SPLIT = re.compile(b"([,+\-&!%'.?|=\s/\*^<>$@\[\](){}#;])")
 SPLIT_CHARS = [',','+','&','!','%','?','_','|',':','-','=','\\','~','*','^','<','>','[',']','$','{','}',';','.','`','@','(',')']
 
 def remove_blank(texts):
@@ -63,7 +63,7 @@ def assemble_clean(text,need_replace_number,max_length,need_reverse):
         text = re.sub('@', '', text)
         text = re.sub(' +', ' ', text)
         text = re.sub('\n+', '\n', text)
-        if (max_length != 0):
+        if (max_length != -1):
             if(not need_reverse):
                 text = ' '.join(text.split(' ')[:max_length])+ ' ..' if len(text.split(' ')) > max_length else text
             else:
@@ -86,7 +86,7 @@ def bytecode_clean(text,max_length,need_reverse):
         new_texts.append(' '.join(ts))
     text = ' $ '.join(new_texts)
     text = re.sub(' +', ' ', text)
-    if (max_length != 0):
+    if (max_length != -1):
         if (not need_reverse):
             text = ' '.join(text.split(' ')[:max_length]) + ' ..' if len(text.split(' ')) > max_length else text
         else:

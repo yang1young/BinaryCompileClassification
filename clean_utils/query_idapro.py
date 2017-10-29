@@ -1,14 +1,33 @@
 from idapro_utils.idapro.idautils import *
 from idapro_utils.idapro.idaapi import *
 from idapro_utils.idapro.idc import *
-import c_parse
+from pycparser import c_ast, parse_file
+
+
+class FuncDefVisitor(c_ast.NodeVisitor):
+    def __init__(self):
+        self.fun_list = []
+        self.coord_list = []
+
+    def visit_FuncDef(self, node):
+        self.fun_list.append(node.decl.name)
+        self.coord_list.append(node.decl.coord)
+        # return fun_list,coord_list
+
+
+def get_func_name(file_name):
+    ast = parse_file(file_name, use_cpp=False)
+    v = FuncDefVisitor()
+    v.visit(ast)
+    return v.fun_list
+
 
 def query_ida():
 
     output_path = idc.ARGV[1]
     source_nohead_file = idc.ARGV[2]
     file_name = str(source_nohead_file).split("/")[-1].split(".")[0]
-    func_list = c_parse.get_func_name(source_nohead_file)
+    func_list = get_func_name(source_nohead_file)
 
     idaapi.autoWait()
 
@@ -68,3 +87,4 @@ def query_ida():
 
     # exit ida pro
     Exit(1)
+query_ida()

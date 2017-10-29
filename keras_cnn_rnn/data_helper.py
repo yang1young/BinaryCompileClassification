@@ -56,8 +56,8 @@ def prepare_dl_data(data_path,is_bytecode):
 
     blocks = []
     for text in texts:
-        codes = str(text).split('$')
-        blocks.append(codes[:-1])
+        codes = str(text).split('#')
+        blocks.append(codes)
     return texts,blocks,labels
 
 

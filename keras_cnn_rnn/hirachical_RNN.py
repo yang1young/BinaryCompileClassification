@@ -12,11 +12,11 @@ import clean_utils.clean_utils as cu
 import data_helper
 
 MAX_SENT_LENGTH = 150
-MAX_SENTS = 40
-NUM_CLASS = 4
+MAX_SENTS = 10
+NUM_CLASS = 104
 MAX_NB_WORDS = 10000
-EMBEDDING_DIM = 200
-MAX_EPOCH = 6
+EMBEDDING_DIM = 300
+MAX_EPOCH = 1
 
 def data_transfer(word_index,x,y):
     data = np.zeros((len(x), MAX_SENTS, MAX_SENT_LENGTH), dtype='int32')
@@ -48,13 +48,13 @@ def model_structure():
     embedded_sequences = Embedding(input_dim=MAX_NB_WORDS+1,output_dim=EMBEDDING_DIM, input_length=MAX_SENT_LENGTH,trainable=True,mask_zero=True)(
         sentence_input)
     initial = keras.initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
-    l_lstm = LSTM(100,kernel_initializer =initial,dropout=0.5)(embedded_sequences)
+    l_lstm = LSTM(200,kernel_initializer =initial,dropout=0.5)(embedded_sequences)
     sentEncoder = Model(sentence_input, l_lstm)
 
     review_input = Input(shape=(MAX_SENTS, MAX_SENT_LENGTH), dtype='float32')
     #review_input = Masking(mask_value=12345,input_shape=(MAX_SENTS, MAX_SENT_LENGTH))(temp_input)
     review_encoder = TimeDistributed(sentEncoder)(review_input)
-    l_lstm_sent = LSTM(100,kernel_initializer =initial,dropout=0.5)(review_encoder)
+    l_lstm_sent = LSTM(200,kernel_initializer =initial,dropout=0.5)(review_encoder)
     preds = Dense(NUM_CLASS, activation='softmax')(l_lstm_sent)
     model = Model(review_input, preds)
     return model
@@ -101,7 +101,7 @@ def train(x_train, y_train,x_val, y_val,model_path):
 def reload_model(model_name):
     model = model_structure()
     # load weights
-    model.load_weights(data_helper.model_dir + model_name)
+    model.load_weights(model_name)
     # Compile model (required to make predictions)
     #optimizer = keras.optimizers.Adagrad(lr=0.3, epsilon=1e-08, decay=0.0)
     model.compile(loss='categorical_crossentropy',
@@ -113,13 +113,14 @@ def reload_model(model_name):
 
 
 if __name__ == "__main__":
-    data_path = "/home/qiaoyang/codeData/binary_code/newData2/chunk_byte/"
-    train_path = data_path+"data.train"
-    dev_path = data_path+"data.dev"
-    test_path = data_path+"data.test"
-    model_path = data_path + 'model/'
+    path = ""
+    data_path = path+""
+    train_path = data_path+"train.txt"
+    dev_path = data_path+"dev.txt"
+    test_path = data_path+"test.txt"
+    model_path = path + 'model/'
 
-    is_bytecode = True
+    is_bytecode = False
     train_texts, train_blocks,train_labels = data_helper.prepare_dl_data(train_path, is_bytecode)
     _,dev_blocks, dev_labels = data_helper.prepare_dl_data(dev_path, is_bytecode)
     _,test_blocks,test_labels = data_helper.prepare_dl_data(test_path, is_bytecode)

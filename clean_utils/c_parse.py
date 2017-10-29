@@ -1,5 +1,4 @@
 from pycparser import c_ast,parse_file
-import os
 
 class FuncDefVisitor(c_ast.NodeVisitor):
 	def __init__(self):

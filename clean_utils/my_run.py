@@ -22,6 +22,6 @@ def main():
             file_name = f.split(".")[0]
             source_nohead_file = source_nohead_path+dir+'/'+file_name+'.cpp'
 
-            cmd = ida_path + ' -c -A -S"%s %s %s" %s' % (python_script_path, binary_result_path+dir, source_nohead_file, binary_path+f)
+            cmd = ida_path + ' -c -A -S"%s %s %s" %s' % (python_script_path, binary_result_path+dir+'/', source_nohead_file, binary_path+dir+'/'+f)
             # print cmd
             p = Popen(cmd, shell=True, stdout=PIPE)
