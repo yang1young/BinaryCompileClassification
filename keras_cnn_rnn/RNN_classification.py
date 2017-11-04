@@ -53,6 +53,7 @@ def rnn_model():
     model.add(Dense(NUM_CLASS, activation='softmax'))
     return model
 
+
 def cnn_model():
     convs = []
     filter_sizes = [3, 4, 5]
@@ -76,6 +77,35 @@ def cnn_model():
     preds = Dense(NUM_CLASS, activation='softmax')(l_dense)
 
     model = Model(sequence_input, preds)
+    print model.summary()
+    return model
+
+
+from keras.layers import Conv1D, MaxPooling1D, Conv2D, MaxPooling2D,Embedding, Merge, LSTM
+from keras.layers import Dense, Input, Flatten,Dropout,Reshape
+def cnn2_model():
+
+    filter_sizes = [3, 4, 5]
+    inputs = Input(shape=(MAX_SENT_LENGTH,), dtype='int32')
+    embedding = Embedding(output_dim=EMBEDDING_DIM, input_dim=MAX_NB_WORDS+1, input_length=MAX_SENT_LENGTH,trainable = True)(inputs)
+    reshape = Reshape((MAX_SENT_LENGTH, EMBEDDING_DIM, 1))(embedding)
+
+    conv_0 = Conv2D(512, filter_sizes[0], EMBEDDING_DIM, border_mode='valid', init='normal',activation='relu', dim_ordering='tf')(reshape)
+    conv_1 = Conv2D(512, filter_sizes[1], EMBEDDING_DIM, border_mode='valid', init='normal',activation='relu', dim_ordering='tf')(reshape)
+    conv_2 = Conv2D(512, filter_sizes[2], EMBEDDING_DIM, border_mode='valid', init='normal',activation='relu', dim_ordering='tf')(reshape)
+
+    maxpool_0 = MaxPooling2D(pool_size=(MAX_SENT_LENGTH - filter_sizes[0] + 1, 1), strides=(1, 1), border_mode='valid',dim_ordering='tf')(conv_0)
+    maxpool_1 = MaxPooling2D(pool_size=(MAX_SENT_LENGTH - filter_sizes[1] + 1, 1), strides=(1, 1), border_mode='valid',dim_ordering='tf')(conv_1)
+    maxpool_2 = MaxPooling2D(pool_size=(MAX_SENT_LENGTH - filter_sizes[2] + 1, 1), strides=(1, 1), border_mode='valid',dim_ordering='tf')(conv_2)
+
+    merged_tensor = Merge(mode='concat', concat_axis=1)([maxpool_0, maxpool_1, maxpool_2])
+    flatten = Flatten()(merged_tensor)
+    # reshape = Reshape((3*num_filters,))(merged_tensor)
+    dropout = Dropout(0.5)(flatten)
+
+    output = Dense(NUM_CLASS, activation='softmax')(dropout)
+    # this creates a model that includes
+    model = Model(input=inputs, output=output)
     print model.summary()
     return model
 
