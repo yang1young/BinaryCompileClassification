@@ -2,8 +2,8 @@ import keras
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
-from keras.layers import Conv1D, MaxPooling1D, Embedding, Merge, LSTM
-from keras.layers import Dense, Input, Flatten,Dropout
+from keras.layers import Conv1D, MaxPooling1D, Conv2D, MaxPooling2D,Embedding, Merge, LSTM
+from keras.layers import Dense, Input, Flatten,Dropout,Reshape
 from keras.models import Model, Sequential
 from keras.utils.np_utils import to_categorical
 from sklearn.metrics import precision_score, recall_score, accuracy_score
@@ -81,8 +81,6 @@ def cnn_model():
     return model
 
 
-from keras.layers import Conv1D, MaxPooling1D, Conv2D, MaxPooling2D,Embedding, Merge, LSTM
-from keras.layers import Dense, Input, Flatten,Dropout,Reshape
 def cnn2_model():
 
     filter_sizes = [3, 4, 5]
@@ -106,6 +104,25 @@ def cnn2_model():
     output = Dense(NUM_CLASS, activation='softmax')(dropout)
     # this creates a model that includes
     model = Model(input=inputs, output=output)
+    print model.summary()
+    return model
+
+def cnn_lstm():
+    
+    sequence_input = Input(shape=(MAX_SENT_LENGTH,), dtype='int32')
+    embedded_sequences = Embedding(output_dim=EMBEDDING_DIM, input_dim=MAX_NB_WORDS, input_length=MAX_SENT_LENGTH,
+                                   trainable=True)(sequence_input)
+
+    l_conv1 = Conv1D(nb_filter=64, filter_length=3, activation='relu')(embedded_sequences)
+    dropout1 = Dropout(0.25)(l_conv1)
+    l_conv2 = Conv1D(nb_filter=64, filter_length=3, activation='relu')(dropout1)
+    l_pool = MaxPooling1D(2)(l_conv2)
+    lstm1 = LSTM(70,return_sequences=True)(l_pool)
+    lstm2 = LSTM(70,return_sequences=True)(lstm1)
+    dense = Dense(30)(lstm2)
+    dropout2 = Dropout(0.5)(dense)
+    preds = Dense(NUM_CLASS, activation='softmax')(dropout2)
+    model = Model(sequence_input, preds)
     print model.summary()
     return model
 
